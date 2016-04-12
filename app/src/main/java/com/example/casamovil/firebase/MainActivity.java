@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     ListView nameList;
     Firebase rootRef = null;
+    String firebaseDB = "andresvera";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         nameList = (ListView) findViewById(R.id.namesLv);
-        rootRef = new Firebase("https://andresvera.firebaseio.com/");
+        rootRef = new Firebase("https://" + firebaseDB + ".firebaseio.com/");
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         assert fab != null;
         fab.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             // Include dialog.xml file
             dialog.setContentView(R.layout.custom_dialog);
             // Set dialog title
-            dialog.setTitle("Add Name");
+            dialog.setTitle("Change DB");
 
             // set values for custom dialog components - text, image and button
 
@@ -138,8 +139,29 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     String nameDb = nameTv.getText().toString();
-                    
+                    firebaseDB = nameDb;
+                    rootRef = new Firebase("https://" + firebaseDB + ".firebaseio.com/");
+                    rootRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            ArrayList<String> names = new ArrayList<String>();
+                            for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                                System.out.println("Name: " + postSnapshot.child("name").getValue());
+                                names.add(postSnapshot.child("name").getValue().toString());
+                            }
+                            String[] namesArray = new String[names.size()];
+                            namesArray = names.toArray(namesArray);
+                            CustomAdapter adapter = new CustomAdapter(MainActivity.this, namesArray);
+                            nameList.setAdapter(adapter);
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                            System.out.println("The read failed: " + firebaseError.getMessage());
+                        }
+                    });
                     dialog.dismiss();
+
 
                 }
             });
