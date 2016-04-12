@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     ListView nameList;
     Firebase rootRef = null;
     String firebaseDB = "andresvera";
+    String firebaseDefault = "andresvera";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,25 +143,7 @@ public class MainActivity extends AppCompatActivity {
                     String nameDb = nameTv.getText().toString();
                     firebaseDB = nameDb;
                     rootRef = new Firebase("https://" + firebaseDB + ".firebaseio.com/");
-                    rootRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            ArrayList<String> names = new ArrayList<String>();
-                            for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                                System.out.println("Name: " + postSnapshot.child("name").getValue());
-                                names.add(postSnapshot.child("name").getValue().toString());
-                            }
-                            String[] namesArray = new String[names.size()];
-                            namesArray = names.toArray(namesArray);
-                            CustomAdapter adapter = new CustomAdapter(MainActivity.this, namesArray);
-                            nameList.setAdapter(adapter);
-                        }
-
-                        @Override
-                        public void onCancelled(FirebaseError firebaseError) {
-                            System.out.println("The read failed: " + firebaseError.getMessage());
-                        }
-                    });
+                    connectDB();
                     dialog.dismiss();
 
 
@@ -178,4 +162,35 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void connectDB(){
+        rootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                try {
+                    ArrayList<String> names = new ArrayList<String>();
+                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                        System.out.println("Name: " + postSnapshot.child("name").getValue());
+                        names.add(postSnapshot.child("name").getValue().toString());
+                    }
+                    String[] namesArray = new String[names.size()];
+                    namesArray = names.toArray(namesArray);
+                    CustomAdapter adapter = new CustomAdapter(MainActivity.this, namesArray);
+                    nameList.setAdapter(adapter);
+                }catch (Exception ex){
+                    Toast.makeText(MainActivity.this, "Estructura de base de datos incompatible, se cambiara a la original", Toast.LENGTH_LONG).show();
+                    firebaseDB = firebaseDefault;
+                    rootRef = new Firebase("https://" + firebaseDB + ".firebaseio.com/");
+                    connectDB();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+    }
+
 }
