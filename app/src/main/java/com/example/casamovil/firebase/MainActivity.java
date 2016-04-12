@@ -27,7 +27,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     ListView nameList;
-
+    Firebase rootRef = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         nameList = (ListView) findViewById(R.id.namesLv);
-        final Firebase rootRef = new Firebase("https://andresvera.firebaseio.com/");
+        rootRef = new Firebase("https://andresvera.firebaseio.com/");
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         assert fab != null;
         fab.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                         Map<String, String> post1 = new HashMap<String, String>();
                         post1.put("name", name);
                         rootRef.push().setValue(post1);
+                        dialog.dismiss();
 
                     }
                 });
@@ -119,6 +120,37 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            final Dialog dialog = new Dialog(MainActivity.this);
+            // Include dialog.xml file
+            dialog.setContentView(R.layout.custom_dialog);
+            // Set dialog title
+            dialog.setTitle("Add Name");
+
+            // set values for custom dialog components - text, image and button
+
+
+            dialog.show();
+
+            final EditText nameTv = (EditText) dialog.findViewById(R.id.nameTv);
+
+            Button addBtm = (Button) dialog.findViewById(R.id.addBtn);
+            addBtm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String nameDb = nameTv.getText().toString();
+                    
+                    dialog.dismiss();
+
+                }
+            });
+            Button declineButton = (Button) dialog.findViewById(R.id.cancelBtn);
+            // if decline button is clicked, close the custom dialog
+            declineButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
             return true;
         }
 
