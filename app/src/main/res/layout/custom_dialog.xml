@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:text="Name"
+        android:text=""
         android:ems="10"
         android:id="@+id/nameTv"
         android:layout_alignParentLeft="true"
@@ -28,7 +28,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Canel"
+        android:text="Cancel"
         android:id="@+id/cancelBtn"
         android:layout_gravity="center"
         android:layout_below="@+id/nameTv"

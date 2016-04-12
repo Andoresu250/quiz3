@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
                 // Set dialog title
                 dialog.setTitle("Add Name");
 
-                // set values for custom dialog components - text, image and button
-
-
                 dialog.show();
 
                 final EditText nameTv = (EditText) dialog.findViewById(R.id.nameTv);
@@ -87,13 +84,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 ArrayList<String> names = new ArrayList<String>();
+                ArrayList<String> idsArray = new ArrayList<String>();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     System.out.println("Name: " + postSnapshot.child("name").getValue());
                     names.add(postSnapshot.child("name").getValue().toString());
+                    idsArray.add(postSnapshot.getRef().getKey().toString());
                 }
                 String[] namesArray = new String[names.size()];
                 namesArray = names.toArray(namesArray);
-                CustomAdapter adapter = new CustomAdapter(MainActivity.this, namesArray);
+                String[] ids = new String[idsArray.size()];
+                ids = idsArray.toArray(ids);
+                CustomAdapter adapter = new CustomAdapter(MainActivity.this, namesArray,ids, rootRef);
                 nameList.setAdapter(adapter);
             }
 
@@ -169,13 +170,17 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 try {
                     ArrayList<String> names = new ArrayList<String>();
+                    ArrayList<String> idsArray = new ArrayList<String>();
                     for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                         System.out.println("Name: " + postSnapshot.child("name").getValue());
                         names.add(postSnapshot.child("name").getValue().toString());
+                        idsArray.add(postSnapshot.getRef().getKey().toString());
                     }
                     String[] namesArray = new String[names.size()];
                     namesArray = names.toArray(namesArray);
-                    CustomAdapter adapter = new CustomAdapter(MainActivity.this, namesArray);
+                    String[] ids = new String[idsArray.size()];
+                    ids = idsArray.toArray(ids);
+                    CustomAdapter adapter = new CustomAdapter(MainActivity.this, namesArray, ids, rootRef);
                     nameList.setAdapter(adapter);
                 }catch (Exception ex){
                     Toast.makeText(MainActivity.this, "Estructura de base de datos incompatible, se cambiara a la original", Toast.LENGTH_LONG).show();
