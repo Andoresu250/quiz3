@@ -11,9 +11,7 @@ import android.widget.TextView;
 
 import com.firebase.client.Firebase;
 
-/**
- * Created by dell on 04/04/2016.
- */
+
 public class CustomAdapter extends BaseAdapter{
 
     private static final String TAG = "AS_ListView";

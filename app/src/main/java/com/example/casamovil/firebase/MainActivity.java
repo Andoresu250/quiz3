@@ -3,17 +3,19 @@ package com.example.casamovil.firebase;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
@@ -25,9 +27,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ViewAdapter.RecyclerClickListner {
 
     ListView nameList;
+    ViewAdapter viewAdapter;
+    RecyclerView mRecycleView;
     Firebase rootRef = null;
     String firebaseDB = "andresvera";
     String firebaseDefault = "andresvera";
@@ -38,10 +42,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mRecycleView = (RecyclerView) findViewById(R.id.recycle);
         nameList = (ListView) findViewById(R.id.namesLv);
         rootRef = new Firebase("https://" + firebaseDB + ".firebaseio.com/");
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         assert fab != null;
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,8 +100,12 @@ public class MainActivity extends AppCompatActivity {
                 namesArray = names.toArray(namesArray);
                 String[] ids = new String[idsArray.size()];
                 ids = idsArray.toArray(ids);
-                CustomAdapter adapter = new CustomAdapter(MainActivity.this, namesArray,ids, rootRef);
+                CustomAdapter adapter = new CustomAdapter(MainActivity.this, namesArray, ids, rootRef);
                 nameList.setAdapter(adapter);
+                viewAdapter = new ViewAdapter(MainActivity.this, namesArray);
+                viewAdapter.setRecyclerClickListner(MainActivity.this);
+
+
             }
 
             @Override
@@ -198,4 +208,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void itemClick(View view, int position) {
+
+    }
 }
